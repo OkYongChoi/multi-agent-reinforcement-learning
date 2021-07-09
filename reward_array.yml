@@ -1,0 +1,13 @@
+# Climbing Game
+# [[11, -30,  0], 
+#  [-30,  7,  6], 
+#  [0  ,  0,  5]]]
+# Introduced in C. Claus and C. Boutilier, “The dynamics of reinforcement learning in cooperative multiagent systems.” ,AAAI, 1998
+climbing: [[11, -30, 0], [-30, 7, 6], [0, 0, 5]]
+
+# Penalty Game
+# [[10, -0,  K], 
+#  [-0,  2,  0], 
+#  [K  ,  0,  10]]]
+# Introduced in C. Claus and C. Boutilier, “The dynamics of reinforcement learning in cooperative multiagent systems.” ,AAAI, 1998
+penalty: [[10, -0,  K], [-0, 2, 0], [K , 0, 10]]
