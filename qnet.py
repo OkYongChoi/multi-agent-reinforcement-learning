@@ -12,7 +12,6 @@ class QNet(nn.Module):
         # torch.cuda.manual_seed(seed)
         # torch.cuda.manual_seed_all(seed)
 
-
         self.linear1 = nn.Linear(1,3)
         self.linear2 = nn.Linear(3,3)
         self.linear3 = nn.Linear(3,3)
@@ -28,7 +27,7 @@ class QNet(nn.Module):
 # 
 if __name__ == '__main__': 
     model = QNet()
-    a = torch.Tensor([[1], [1], [1]])
-    print(model(a))
+    a = torch.Tensor([1])
+    print(model(a)[0])
 
 # %%
