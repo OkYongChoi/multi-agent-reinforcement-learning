@@ -5,6 +5,7 @@ from qnet import QNet
 import numpy as np
 import random
 import torch
+from torch import nn
 from torch import optim
 
 #from datetime import datetime
@@ -12,8 +13,8 @@ from torch import optim
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class HystAgent():
-    def __init__(self, state_size =1, action_size=3, discount_factor=0.99, epsilon=1.0, epsilon_decay=0.999, epsilon_min=0.01, 
-                 capacity=1000, batch_size=32, increase_lr=0.1, decrease_lr=0.01, load_model=False):
+    def __init__(self, state_size =1, action_size=3, discount_factor=0.99, lamb=0.1, epsilon=1.0, epsilon_decay=0.999, epsilon_min=0.05, 
+                 capacity=1000, batch_size=32, increase_lr=1, decrease_lr=0.1, load_model=False):
 
         # action, state
         self.state_size = state_size
@@ -21,19 +22,32 @@ class HystAgent():
 
         # Hyper parameters for the Hysteretic Deep Q Learning
         self.gamma = discount_factor
+        self.lamb = lamb
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
         self.epsilon_min = epsilon_min
         self.batch_size = batch_size
         self.increase_lr = increase_lr
         self.decrease_lr = decrease_lr
-
         self.memory = ReplayMemory(capacity, batch_size)
+        
         self.model = QNet().to(device)
         self.target = QNet().to(device)
-        self.update_target_model()
-
         self.optimizer = optim.Adam(self.model.parameters(), lr=0.0001)
+
+        ## For Multiple GPUs.
+        # If there is an imbalance between using GPUs, 
+        # for instance, if you have GPU 1 which has less than 75% of the memory or cores of GPU 0.
+        # you better exclude GPU 1 or allocate 
+        # if torch.cuda.device_count() > 1:
+        #     print("Let's use", torch.cuda.device_count(), "GPUs!")
+        #     # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+        #     self.model = nn.DataParallel(self.model)
+        #     self.target = nn.DataParallel(self.target)
+        self.model.to(device)
+        self.target.to(device)    
+
+        self.update_target_model()        
 
         #If load_model is True, load the saved model
         if load_model is True:
@@ -57,13 +71,13 @@ class HystAgent():
         mini_batch = self.memory.sample()
         sum = 0
         for mb in mini_batch:
-            # r+gamma*maxQ(s',a') - Q(s,a)
-            mb_loss= mb[2] + self.gamma*self.target(mb[3]).max() - self.model(mb[0])[mb[1]]
-            #print(mb_loss)
-            if mb_loss > 0 :
-                mb_loss *= self.increase_lr
+            # r + gamma * maxQ(s',a') - Q(s,a)
+            mb_loss_lamb = mb[2] + self.lamb*self.target(mb[3]).max() - self.model(mb[0])[mb[1]]
+            mb_loss = mb[2] + self.gamma*self.target(mb[3]).max() - self.model(mb[0])[mb[1]]
+            if mb_loss_lamb > 0 :
+                mb_loss = mb_loss*mb_loss * self.increase_lr
             else:
-                mb_loss *= self.decrease_lr
+                mb_loss = mb_loss*mb_loss * self.decrease_lr
             sum += mb_loss
 
         self.optimizer.zero_grad()
@@ -82,7 +96,3 @@ class HystAgent():
         self.model.load_state_dict(torch.load(f'{path}/hyst_model.pth'))
 
 
-# %%
-if __name__ == "__main__":
-    agent = HystAgent()
-    agent.push_sample(1,1,1,1,1)
