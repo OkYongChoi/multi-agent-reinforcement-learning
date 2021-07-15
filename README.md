@@ -4,4 +4,9 @@
 
 ### Environments
 
-* Matrix games
+* **Matrix games**: The simplest stochastic game environments.
+  *climbing:
+climbing: [[11, -30, 0], [-30, 7, 6], [0, 0, 5]]
+| 11 | -30 | 0 |
+|-30 |  7  |6|
+| 0|  0  |5   |
