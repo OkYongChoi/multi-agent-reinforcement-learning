@@ -1,1 +1,7 @@
-# multi-agent-reinforcement-learning
+# Multi-agent Reinforcement Learning in Stochastic Games
+
+## Table of Contents
+
+### Environments
+
+* Matrix games
