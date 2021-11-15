@@ -7,16 +7,16 @@
 * **Matrix games**: The simplest stochastic game environments.
   * Climbing Game:
 
-    | | | | |
-    |-|-|-|-|
+    | | | |
+    |-|-|-|
     | 11|-30| 0 |
     |-30| 7 | 6 |
     | 0 | 0 | 5 |
 
   * Penalty Game:
 
-    | | | | |
-    |-|-|-|-|
+    | | | |
+    |-|-|-|
     | 10| 0 | K |
     | 0 | 2 | 0 |
     | K | 0 | 10|
