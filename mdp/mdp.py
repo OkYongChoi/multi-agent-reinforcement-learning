@@ -89,6 +89,10 @@ class MDP:
         return reward
 
     def make_feature_func(self):
+        """ 
+        Make feature functions and construct the feature matrix of which 
+        size is (state_size x feature_vector_size)
+        """
         # Make sure the feature function sparse
         phi = 1-2*np.random.rand(1, self.state_size)
         # while(np.linalg.matrix_rank(phi) < self.feature_vector_size):
